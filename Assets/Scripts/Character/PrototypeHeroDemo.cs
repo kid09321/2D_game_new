@@ -29,6 +29,9 @@ public class PrototypeHeroDemo : MonoBehaviour {
     [SerializeField] float      m_wallSlideSpeed = 3f;
     [SerializeField] float      m_wallJumpForce = 3f;
     [SerializeField] float      m_wallSlideJumpDuration = 0.1f;
+    [SerializeField] List<TrailRenderer> m_trailRenderers;
+    [Header("Properties")]
+    [SerializeField] float      m_maxHealth = 1000f;
 
     private Animator            m_animator;
     private Rigidbody2D         m_body2d;
@@ -64,6 +67,9 @@ public class PrototypeHeroDemo : MonoBehaviour {
     private float               m_wallJumpDuration = 0.5f;
     private float               m_wallSlideJumpDurationTimer = 0.0f; // Use to have to time to jump against wall
 
+    // Used for character properties
+    private float               m_currentHealth;
+
     void Start ()
     {
         m_animator = GetComponent<Animator>();
@@ -74,6 +80,8 @@ public class PrototypeHeroDemo : MonoBehaviour {
 
         m_damagedColliders = new List<Collider2D>();
         m_spriteRenderer = GetComponent<SpriteRenderer>();
+
+        m_currentHealth = m_maxHealth;
 
     }
 
@@ -171,7 +179,7 @@ public class PrototypeHeroDemo : MonoBehaviour {
 
         else
             m_moving = false;
-        Debug.Log("m_moving: " + m_moving);
+        //Debug.Log("m_moving: " + m_moving);
         // Swap direction of sprite depending on move direction
         if (inputRaw > 0)
         {
@@ -228,13 +236,22 @@ public class PrototypeHeroDemo : MonoBehaviour {
             if (m_dashDurationTimer > 0)
             {
                 m_dashDurationTimer -= Time.deltaTime;
-                m_body2d.velocity = new Vector2(m_facingDirection * m_maxSpeed * m_dashMultiplier, m_body2d.velocity.y);
+                m_body2d.velocity = new Vector2(m_facingDirection * m_maxSpeed * m_dashMultiplier, 0);
+                m_body2d.gravityScale = 0;
+                for(int i = 0; i < m_trailRenderers.Count; i++)
+                {
+                    m_trailRenderers[i].emitting = true;
+                }
+
             }
             else
             {
-                Debug.Log("not dashing");
                 m_dashing = false;
-                //m_body2d.velocity = new Vector2(m_facingDirection * m_maxSpeed, m_body2d.velocity.y);
+                m_body2d.gravityScale = 2;
+                for (int i = 0; i < m_trailRenderers.Count; i++)
+                {
+                    m_trailRenderers[i].emitting = false;
+                }
             }
         }
         else
@@ -359,6 +376,18 @@ public class PrototypeHeroDemo : MonoBehaviour {
         m_animator.SetBool("WallJumping", false);
     }
 
+
+    public void Damaged(int damageValue, GameObject attacker)
+    {
+        // Damage calculation
+        m_currentHealth -= damageValue;
+        // Damaged Animation
+        //m_animator.SetTrigger("Hurt");
+        //m_healthBar.UpdateHealthBar(m_currentHealth, m_maxHealth);
+        //m_rigidBody.velocity = new Vector2(0, m_rigidBody.velocity.y);
+        Debug.Log("Player: " + this.gameObject.name + "get hurt!");
+        Debug.Log("Player: " + this.gameObject.name + "Current Health: " + m_currentHealth);
+    }
 
     // Change Appearance
     void ChangeAppearance(Creature creatureData)

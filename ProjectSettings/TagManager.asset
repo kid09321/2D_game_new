@@ -16,7 +16,7 @@ TagManager:
   - BoundaryLayer
   - EnemyLayer
   - ElevatorCollider
-  - 
+  - ItemCollider
   - 
   - 
   - 
