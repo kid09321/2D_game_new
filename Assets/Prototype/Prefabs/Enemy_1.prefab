@@ -412,7 +412,7 @@ Transform:
   - {fileID: 3596166743307304428}
   - {fileID: 5370282198427580308}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3596166744477420498
 SpriteRenderer:
@@ -538,12 +538,11 @@ MonoBehaviour:
   m_bodyCollider: {fileID: 3596166744477420499}
   m_maxDetectDistance: 5
   m_maxChaseSpeed: 120
-  m_playerTransform: {fileID: 0}
   m_blueCrystal: {fileID: 8310029523933780240, guid: 8eb8d21e55af0c84b91ebf810cb9628c, type: 3}
   m_attackRegion: {fileID: 510269245812188343}
-  m_maxEnemiesToAttack: 0
-  m_attackDuration: 3
-  m_attackCoolDown: 4
+  m_maxEnemiesToAttack: 10
+  m_attackDuration: 1
+  m_attackCoolDown: 0.5
 --- !u!114 &3596166744477420502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -586,7 +585,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5370282198427580308}
   - component: {fileID: 510269245812188343}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: AttackRegion
   m_TagString: Untagged
   m_Icon: {fileID: 0}

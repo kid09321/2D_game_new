@@ -31,7 +31,9 @@ public class PrototypeHeroDemo : MonoBehaviour {
     [SerializeField] float      m_wallSlideJumpDuration = 0.1f;
     [SerializeField] List<TrailRenderer> m_trailRenderers;
     [Header("Properties")]
-    [SerializeField] float      m_maxHealth = 1000f;
+    [SerializeField] int      m_maxHealth = 1000;
+    [Header("UI")]
+    [SerializeField] HealthBar  m_healthBar;
 
     private Animator            m_animator;
     private Rigidbody2D         m_body2d;
@@ -68,7 +70,8 @@ public class PrototypeHeroDemo : MonoBehaviour {
     private float               m_wallSlideJumpDurationTimer = 0.0f; // Use to have to time to jump against wall
 
     // Used for character properties
-    private float               m_currentHealth;
+    private int               m_currentHealth;
+    private bool              m_canDoubleJump = false;
 
     void Start ()
     {
@@ -88,6 +91,15 @@ public class PrototypeHeroDemo : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
+        if (!GameManager.Instance.m_canControlPlayer)
+        {
+            //Stop character;
+            m_body2d.velocity = new Vector2(0, m_body2d.velocity.y);
+            m_animator.SetBool("Grounded", m_grounded);
+            m_animator.SetFloat("AirSpeedY", m_body2d.velocity.y);
+            m_animator.SetInteger("AnimState", 0);
+            return;
+        }
         // Decrease timer that disables input movement. Used when attacking
         m_disableMovementTimer -= Time.deltaTime;
 
@@ -129,11 +141,11 @@ public class PrototypeHeroDemo : MonoBehaviour {
             //Jump
             if (Input.GetButtonDown("Jump") && m_grounded && m_disableMovementTimer < 0.0f)
             {
-                m_animator.SetTrigger("Jump");
-                m_grounded = false;
-                m_animator.SetBool("Grounded", m_grounded);
-                m_body2d.velocity = new Vector2(m_body2d.velocity.x, m_jumpForce);
-                m_groundSensor.Disable(0.2f);
+                Jump();
+            }
+            else if(Input.GetButtonDown("Jump") && !m_grounded && m_canDoubleJump)
+            {
+                DoubleJump();
             }
 
             //Run
@@ -225,6 +237,7 @@ public class PrototypeHeroDemo : MonoBehaviour {
         {
             if (!m_dashing && m_dashCoolDownTimer <= 0)
             {
+                AE_Dash();
                 Debug.Log("is dashing");
                 m_dashing = true;
                 m_dashCoolDownTimer = m_dashCoolDown;
@@ -366,6 +379,11 @@ public class PrototypeHeroDemo : MonoBehaviour {
             m_animator.SetTrigger("WallJump");
             Invoke("setWallJumpingToFalse", m_wallJumpDuration);
             m_body2d.velocity = new Vector2(m_body2d.velocity.x, m_wallJumpForce);
+            m_canDoubleJump = true;
+        }
+        else if (Input.GetButtonDown("Jump") && m_wallJump && m_canDoubleJump)
+        {
+            DoubleJump();
         }
 
     }
@@ -376,14 +394,31 @@ public class PrototypeHeroDemo : MonoBehaviour {
         m_animator.SetBool("WallJumping", false);
     }
 
-
+    private void Jump()
+    {
+        m_animator.SetTrigger("Jump");
+        m_grounded = false;
+        m_animator.SetBool("Grounded", m_grounded);
+        m_body2d.velocity = new Vector2(m_body2d.velocity.x, m_jumpForce);
+        m_groundSensor.Disable(0.2f);
+        m_canDoubleJump = true;
+    }
+    private void DoubleJump()
+    {
+        Debug.Log("DoubleJump");
+        m_animator.SetTrigger("Jump");
+        m_animator.SetBool("Grounded", m_grounded);
+        m_body2d.velocity = new Vector2(m_body2d.velocity.x, m_jumpForce);
+        m_groundSensor.Disable(0.2f);
+        m_canDoubleJump = false;
+    }
     public void Damaged(int damageValue, GameObject attacker)
     {
         // Damage calculation
         m_currentHealth -= damageValue;
         // Damaged Animation
         //m_animator.SetTrigger("Hurt");
-        //m_healthBar.UpdateHealthBar(m_currentHealth, m_maxHealth);
+        m_healthBar.UpdateHealthBar(m_currentHealth, m_maxHealth);
         //m_rigidBody.velocity = new Vector2(0, m_rigidBody.velocity.y);
         Debug.Log("Player: " + this.gameObject.name + "get hurt!");
         Debug.Log("Player: " + this.gameObject.name + "Current Health: " + m_currentHealth);
@@ -457,5 +492,25 @@ public class PrototypeHeroDemo : MonoBehaviour {
     {
         Debug.Log("EndAttackEvent Called");
         //m_attackTimeBetweenTimer = m_attackTimeBetween;       
+    }
+
+    void AE_Attack1()
+    {
+        m_audioManager.PlaySound("Swing1");
+    }
+
+    void AE_Attack2()
+    {
+        m_audioManager.PlaySound("Swing1");
+    }
+
+    void AE_Attack3()
+    {
+        m_audioManager.PlaySound("Swing2");
+    }
+
+    void AE_Dash()
+    {
+        m_audioManager.PlaySound("Dash");
     }
 }

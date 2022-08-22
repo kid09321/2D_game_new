@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class Absorb : MonoBehaviour
 {
-    [SerializeField] float m_maxSpeed = 5f;
-    [SerializeField] float m_instantiateDuration = 0.5f;
-    [SerializeField] float m_dropSpeedY = 0.1f;
+    [SerializeField] float      m_maxSpeed = 5f;
+    [SerializeField] float      m_instantiateDuration = 0.5f;
+    [SerializeField] float      m_dropSpeedY = 0.1f;
+    [SerializeField] GameObject m_hitEffect;
 
     private Rigidbody2D m_body2d;
     private int         m_direction = 1;
     private bool        m_absorbing = false;
     private Transform   m_moveTarget;
-    private float m_instantiateTimer = 0.0f;
+    private float       m_instantiateTimer = 0.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -23,11 +24,11 @@ public class Absorb : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (m_instantiateTimer < m_instantiateDuration)
         {
-            m_instantiateTimer += Time.deltaTime;
+            m_instantiateTimer += Time.fixedDeltaTime;
         }
 
         if (Vector2.Distance(new Vector2(transform.position.x, transform.position.y), new Vector2(m_moveTarget.position.x, m_moveTarget.position.y)) < 3f)
@@ -51,10 +52,11 @@ public class Absorb : MonoBehaviour
         {
             m_direction = 1;
         }
-        transform.position = Vector2.MoveTowards(transform.position, m_moveTarget.position, m_maxSpeed);
+        transform.position = Vector2.MoveTowards(transform.position, m_moveTarget.position, m_maxSpeed * Time.fixedDeltaTime);
         if (Vector2.Distance(transform.position, m_moveTarget.position) < 0.1f)
         {
             gameObject.SetActive(false);
+            Instantiate(m_hitEffect, m_moveTarget);
         }
     }
 }

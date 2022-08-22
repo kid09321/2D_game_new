@@ -24,7 +24,6 @@ public class EnemyBehavior : MonoBehaviour
 
     [SerializeField] float      m_maxDetectDistance = 5f;
     [SerializeField] float      m_maxChaseSpeed = 60f;
-    [SerializeField] Transform  m_playerTransform;
 
     [SerializeField] GameObject m_blueCrystal;
 
@@ -42,6 +41,7 @@ public class EnemyBehavior : MonoBehaviour
     private Rigidbody2D  m_rigidBody;
     private int          m_faceDirection = -1;
     private bool         m_grounded = false;
+    private Transform    m_playerTransform;
 
     private int          m_numberOfBlueCrystal = 5;
 
@@ -57,6 +57,7 @@ public class EnemyBehavior : MonoBehaviour
         m_animator = GetComponentInChildren<Animator>();
         m_healthBar = GetComponentInChildren<HealthBar>();
         m_rigidBody = GetComponent<Rigidbody2D>();
+        m_playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         InitializeProperties();
     }
 
@@ -78,12 +79,6 @@ public class EnemyBehavior : MonoBehaviour
                     Patrol();
                 }
                 break;
-            case EnemyStates.Chase:
-                ChasePlayer();
-                break;
-            case EnemyStates.Attack:
-                AttackState();
-                break;
         }
     }
 
@@ -98,6 +93,12 @@ public class EnemyBehavior : MonoBehaviour
                     Flip();
                 }
                 break;
+            case EnemyStates.Chase:
+                ChasePlayer();
+                break;
+            case EnemyStates.Attack:
+                AttackState();
+                break;
         }
     }
     public void Damaged(int damageValue, GameObject attacker)
@@ -106,7 +107,10 @@ public class EnemyBehavior : MonoBehaviour
         // Damage calculation
         m_currentHealth -= damageValue;
         // Damaged Animation
-        m_animator.SetTrigger("Hurt");
+        if (!m_attacking)
+        {
+            m_animator.SetTrigger("Hurt");
+        }
         m_healthBar.UpdateHealthBar(m_currentHealth, m_maxHealth);
         //m_rigidBody.velocity = new Vector2(0, m_rigidBody.velocity.y);
         Debug.Log("Enemy: " + this.gameObject.name + "get hurt!");
@@ -117,7 +121,7 @@ public class EnemyBehavior : MonoBehaviour
     {
         m_currentHealth = m_maxHealth;
         m_currentStrength = m_strength;
-        m_currentState = EnemyStates.Patrol;
+        SetState(EnemyStates.Patrol);
 
         m_damagedColliders = new List<Collider2D>();
     }
@@ -129,7 +133,8 @@ public class EnemyBehavior : MonoBehaviour
             if (m_currentState != EnemyStates.Dead)
             {
                 m_animator.SetTrigger("Death");
-                m_currentState = EnemyStates.Dead;
+                m_animator.SetBool("Dead", true);
+                SetState(EnemyStates.Dead);
                 m_healthBar.gameObject.SetActive(false);
                 Drop();
             }
@@ -171,7 +176,7 @@ public class EnemyBehavior : MonoBehaviour
         if (Vector2.Distance(position, playerPosition) < m_maxDetectDistance)
         {
             if(Vector2.Angle(playerPosition - position, new Vector2(m_faceDirection, 0)) < 90f){
-                m_currentState = EnemyStates.Chase;
+                SetState(EnemyStates.Chase);
             }
         }
     }
@@ -190,10 +195,7 @@ public class EnemyBehavior : MonoBehaviour
         Vector2 playerPosition = new Vector2(m_playerTransform.position.x, m_playerTransform.position.y);
         if (Vector2.Distance(position, playerPosition) < 3f)
         {
-            if (Vector2.Angle(playerPosition - position, new Vector2(m_faceDirection, 0)) < 90f)
-            {
-                m_currentState = EnemyStates.Attack;
-            }
+            SetState(EnemyStates.Attack);
         }
         //Check if character just landed on the ground
         if (!m_grounded && m_groundSensor)
@@ -217,29 +219,35 @@ public class EnemyBehavior : MonoBehaviour
     }
 
     void AttackState()
-    {
-        // Back to Chase State if distance to player is too large.
+    {      
         Vector2 position = new Vector2(transform.position.x, transform.position.y);
         Vector2 playerPosition = new Vector2(m_playerTransform.position.x, m_playerTransform.position.y);
-     
+        m_rigidBody.velocity = new Vector2(0, m_rigidBody.velocity.y);
         //Attack
         if (!m_attacking && m_attackCoolDownTimer <= 0)
         {
-            Debug.Log("AttackState");
             m_attacking = true;
             m_damagedColliders.Clear();
             m_animator.SetTrigger("Attack");
             m_animator.SetBool("Attacking", true);             
             m_attackDurationTimer = 0f;
+            m_attackCoolDownTimer = m_attackCoolDown;
+            Debug.Log("Attacking");
         }
 
         if (m_animator.GetFloat("Weapon.Active") > 0f)
         {
-            Attack();
-            Debug.Log("Attack");
+            Attack();         
         }
+        // If attacking check attack duration and count duration.
         if (m_attacking)
-        {
+        {          
+            if (m_attackDurationTimer >= m_attackDuration)
+            {
+                m_attacking = false;
+                m_animator.SetBool("Attacking", false);
+                Debug.Log("Attacking over");               
+            }
             m_attackDurationTimer += Time.fixedDeltaTime;
         }
         else
@@ -248,24 +256,18 @@ public class EnemyBehavior : MonoBehaviour
             {
                 Flip();
             }
-            m_animator.SetInteger("AnimState", 0);
+            // Back to Chase State if distance to player is too large.
             if (Vector2.Distance(position, playerPosition) > 3f)
             {
-                m_currentState = EnemyStates.Chase;
+                SetState(EnemyStates.Chase);
             }
-        }
-        if (m_attackDurationTimer >= m_attackDuration && m_attacking)
-        {
-            m_attacking = false;
-            m_animator.SetBool("Attacking", false);
-            m_attackCoolDownTimer = m_attackCoolDown;
-        }
-        m_attackCoolDownTimer -= Time.fixedDeltaTime;
+            m_animator.SetInteger("AnimState", 0);
+            m_attackCoolDownTimer -= Time.fixedDeltaTime;
+        }      
     }
 
     void Attack()
     {
-        Debug.Log("Actual Attack");
         Collider2D[] attackCandidates = new Collider2D[m_maxEnemiesToAttack];
         ContactFilter2D filter = new ContactFilter2D();
         filter.useTriggers = false;
@@ -283,13 +285,6 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
-    void SetState(EnemyStates enemyState)
-    {
-        m_currentState = enemyState;
-        //Invoke EnemyStateChanged Event.
-        //EnemyStateChanged.Invoke();
-    }
-
     // Drop items when enemy is dead.
     void Drop()
     {
@@ -299,6 +294,47 @@ public class EnemyBehavior : MonoBehaviour
             y *= -1;
             Instantiate(m_blueCrystal, transform.position + new Vector3(-i / 4f, y, 0),Quaternion.identity, null);
         }
+    }
+
+    void SetState(EnemyStates state)
+    {
+        m_currentState = state;
+        switch (state)
+        {
+            case EnemyStates.Patrol:
+                OnEnterPatrolState();
+                break;
+            case EnemyStates.Chase:
+                OnEnterChaseState();
+                break;
+            case EnemyStates.Attack:
+                OnEnterAttackState();
+                break;
+            case EnemyStates.Dead:
+                OnEnterDeadState();
+                break;
+        }
+    }
+
+    void OnEnterPatrolState()
+    {
+
+    }
+
+    void OnEnterChaseState()
+    {
+
+    }
+
+    void OnEnterAttackState()
+    {
+        m_animator.SetInteger("AnimState", 0);
+        m_animator.SetBool("Attacking", false);
+    }
+
+    void OnEnterDeadState()
+    {
+
     }
 
 

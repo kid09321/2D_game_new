@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ad898c4ff6bf694ab63c5ade79dfd3a, type: 3}
+  m_Name: FirstBossFightDialogue
+  m_EditorClassIdentifier: 
+  m_storyDialuges:
+  - {fileID: 11400000, guid: 29f17c7c670ee614c82df28773b1f7b6, type: 2}
+  - {fileID: 11400000, guid: 90c825b4125458e4389be2375336030f, type: 2}
+  - {fileID: 11400000, guid: e8bd2494f8c6f6c46b1f48b073cad7db, type: 2}
+  - {fileID: 11400000, guid: e7f2a7b102dd9a94292e99e7a2811de3, type: 2}
+  - {fileID: 11400000, guid: ab1e3bd4b9238494c8a3e0620f4d3c44, type: 2}

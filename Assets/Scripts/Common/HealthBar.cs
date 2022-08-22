@@ -20,7 +20,10 @@ public class HealthBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        FollowCharacter(m_owner.position);
+        if (m_owner != null)
+        {
+            FollowCharacter(m_owner.position);
+        }
     }
 
     public void UpdateHealthBar(int currentHealth, int maxHealth)
