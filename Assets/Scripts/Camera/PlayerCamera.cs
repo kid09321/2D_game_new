@@ -13,6 +13,10 @@ public class PlayerCamera : MonoBehaviour
 
     private Vector2 m_cameraCurrentVelocity = Vector2.zero;
 
+    private void Awake()
+    {
+        //transform.position = m_characterTransform.position;
+    }
     // Start is called before the first frame update
     void Start()
     {

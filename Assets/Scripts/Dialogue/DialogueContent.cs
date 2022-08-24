@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class DialogueContent : ScriptableObject
 {
     [SerializeField] string m_content = "Default dialogue content.";
+    [SerializeField] string m_speakerName = "Default name";
     [SerializeField] Sprite m_speakerImage;
     
     public string GetContent()
@@ -17,6 +18,11 @@ public class DialogueContent : ScriptableObject
     public Sprite GetSpeaker()
     {
         return m_speakerImage;
+    }
+
+    public string GetSpeakerName()
+    {
+        return m_speakerName;
     }
 
 }

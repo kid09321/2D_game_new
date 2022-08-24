@@ -14,6 +14,7 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_TMP;
     [SerializeField] GameObject      m_dialogueUI;
     [SerializeField] Image           m_dialogueImage;
+    [SerializeField] TextMeshProUGUI m_dialogueSpeakerName;
     //
     private int             m_lineCounter = 0;
     private bool            m_lineFinished = false;
@@ -93,6 +94,7 @@ public class DialogueManager : MonoBehaviour
         {
             StartCoroutine("DisplayDialogue", dialogues[m_lineCounter]);
             m_dialogueImage.sprite = dialogues[m_lineCounter].GetSpeaker();
+            m_dialogueSpeakerName.text = dialogues[m_lineCounter].GetSpeakerName();
         }
     }
 

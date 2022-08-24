@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     public bool m_canControlPlayer = true;
     public bool m_canMoveCamera = true;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         if(Instance == null)
         {
@@ -23,10 +23,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        SetCurrentState(GameState.Normal);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void SetCurrentState(GameState gameState)

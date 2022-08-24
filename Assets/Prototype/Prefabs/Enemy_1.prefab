@@ -224,6 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_healthBarFill: {fileID: 3596166744036968731}
+  m_healthBarText: {fileID: 0}
   m_owner: {fileID: 3596166744477420509}
   m_Offset: 0.8
 --- !u!1 &3596166744036968729
