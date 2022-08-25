@@ -1088,11 +1088,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3596166744477420509, guid: 069289549c7f391488d6e11aba640fbb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.23
+      value: -3.97
       objectReference: {fileID: 0}
     - target: {fileID: 3596166744477420509, guid: 069289549c7f391488d6e11aba640fbb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.29
+      value: -0.55
       objectReference: {fileID: 0}
     - target: {fileID: 3596166744477420509, guid: 069289549c7f391488d6e11aba640fbb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2288,11 +2288,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6496182223505173506, guid: 28c06f04d96cdcb4e824cb6440cf100e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.7
+      value: -7.88
       objectReference: {fileID: 0}
     - target: {fileID: 6496182223505173506, guid: 28c06f04d96cdcb4e824cb6440cf100e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.23
+      value: -0.81
       objectReference: {fileID: 0}
     - target: {fileID: 6496182223505173506, guid: 28c06f04d96cdcb4e824cb6440cf100e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -9535,7 +9535,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1038954975958416369, guid: b2341fc88735d204a9ae6f6b2f29968d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 54
+      value: -13.7
       objectReference: {fileID: 0}
     - target: {fileID: 1038954975958416369, guid: b2341fc88735d204a9ae6f6b2f29968d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -9582,6 +9582,10 @@ PrefabInstance:
       value: MainCamera
       objectReference: {fileID: 0}
     - target: {fileID: 1038954975958416382, guid: b2341fc88735d204a9ae6f6b2f29968d, type: 3}
+      propertyPath: m_RenderShadows
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1038954975958416382, guid: b2341fc88735d204a9ae6f6b2f29968d, type: 3}
       propertyPath: m_RenderPostProcessing
       value: 0
       objectReference: {fileID: 0}
@@ -9612,7 +9616,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1253527453}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -9.804398, y: -0.91818225, z: -0.047513526}
+  m_LocalPosition: {x: -73.8, y: -0.91818225, z: -0.047513526}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11726,6 +11730,7 @@ Transform:
   - {fileID: 375079502}
   - {fileID: 726894635}
   - {fileID: 1100415765}
+  - {fileID: 2078005335}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -32607,6 +32612,7 @@ GameObject:
   - component: {fileID: 2078005334}
   - component: {fileID: 2078005333}
   - component: {fileID: 2078005336}
+  - component: {fileID: 2078005337}
   m_Layer: 0
   m_Name: Saw Trap - Level 3_0
   m_TagString: Untagged
@@ -32693,14 +32699,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2078005332}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20.13, y: 7.64, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 26.0256, y: 8.021817, z: -0.047513526}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 918309145}
-  m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_Father: {fileID: 1999017685}
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2078005336
 MonoBehaviour:
@@ -32714,6 +32720,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94dcad1dc0fb75942bd20306a8f3d994, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!61 &2078005337
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2078005332}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -2.0203323, y: 1.5113344}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 6, y: 4}
+    newSize: {x: 6, y: 4}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.7087479, y: 1.0086536}
+  m_EdgeRadius: 0
 --- !u!1 &2092854717
 GameObject:
   m_ObjectHideFlags: 0
