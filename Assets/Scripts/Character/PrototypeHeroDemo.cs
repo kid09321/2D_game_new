@@ -10,12 +10,7 @@ public class PrototypeHeroDemo : MonoBehaviour {
     [SerializeField] float      m_dashMultiplier = 10f;
     [SerializeField] float      m_dashCoolDown = 3f;
     [SerializeField] float      m_dashDuration = 0.2f;
-    [SerializeField] float      m_attackDuration = 0.7f;
-    [SerializeField] float      m_attackCoolDown = 0.5f;
-    [SerializeField] float      m_attackTimeBetween = 0.1f;
     [SerializeField] bool       m_hideSword = false;
-    [SerializeField] int        m_maxEnemiesToAttack = 10;
-    [SerializeField] Collider2D m_attackRegion;
     [Header("Effects")]
     [SerializeField] GameObject m_RunStopDust;
     [SerializeField] GameObject m_JumpDust;
@@ -51,13 +46,6 @@ public class PrototypeHeroDemo : MonoBehaviour {
     private float               m_dashDurationTimer = 0.0f;
     private int                 m_defaultFacingDirection = 1;
 
-    // Used for combat
-    private int                 m_currentAttackState = 0;
-    private float               m_attackDurationTimer = 0.0f;
-    private float               m_attackCoolDownTimer = 0.0f;
-    private float               m_attackTimeBetweenTimer = 0.0f;
-    private List<Collider2D>    m_damagedColliders;
-
     // Used for change appearance
     private bool                m_changingAppearance = false;
     private SpriteRenderer      m_spriteRenderer;
@@ -81,7 +69,6 @@ public class PrototypeHeroDemo : MonoBehaviour {
         m_audioManager = AudioManager_PrototypeHero.instance;
         m_groundSensor = transform.Find("GroundSensor").GetComponent<Sensor_Prototype>();
 
-        m_damagedColliders = new List<Collider2D>();
         m_spriteRenderer = GetComponent<SpriteRenderer>();
 
         m_currentHealth = m_maxHealth;
@@ -125,15 +112,7 @@ public class PrototypeHeroDemo : MonoBehaviour {
 
         // Set Animation layer for hiding sword
         int boolInt = m_hideSword ? 1 : 0;
-        m_animator.SetLayerWeight(1, boolInt);
-
-        //Attack
-        HandleAttack();
-        if (m_attacking)
-        {
-            m_animator.SetInteger("AnimState", 3);
-            m_attackDurationTimer += Time.deltaTime;
-        }
+        m_animator.SetLayerWeight(1, boolInt);      
 
         if (!m_movementLocked)
         {                        
@@ -171,7 +150,11 @@ public class PrototypeHeroDemo : MonoBehaviour {
         }
 
     }
-
+    // Set functions
+    public void SetMovementLock(bool lockMovement)
+    {
+        m_movementLocked = lockMovement;
+    }
     // Handlers
     
     // Movement input handler
@@ -191,7 +174,7 @@ public class PrototypeHeroDemo : MonoBehaviour {
 
         else
             m_moving = false;
-        //Debug.Log("m_moving: " + m_moving);
+
         // Swap direction of sprite depending on move direction
         if (inputRaw > 0)
         {
@@ -276,74 +259,6 @@ public class PrototypeHeroDemo : MonoBehaviour {
         }
     }
 
-    // AttackHandler
-    void HandleAttack()
-    {
-        if (Input.GetKeyDown(KeyCode.Z) && !m_attacking && m_attackCoolDownTimer <= 0)
-        {            
-            m_attacking = true;
-            m_movementLocked = true;
-            m_damagedColliders.Clear();
-            switch (m_currentAttackState % 3)
-            {
-                case 0:
-                    m_animator.SetTrigger("Attack1");
-                    break;
-                case 1:
-                    m_animator.SetTrigger("Attack2");
-                    break;
-                case 2:
-                    m_animator.SetTrigger("Attack3");
-                    m_attackCoolDownTimer = m_attackCoolDown;
-                    break;
-
-            }
-            m_currentAttackState += 1;
-            m_animator.SetInteger("AnimState", 3);
-            m_attackDurationTimer = 0.0f;
-            m_attackTimeBetweenTimer = 0.0f;
-        }
-
-
-        if(m_animator.GetFloat("Weapon.Active") > 0f)
-        {
-            Attack();
-        }
-        // To lock the movement when comboing.
-        // After one attack duration is over, attacking set to false first.
-        // Then check if there is next attack in m_attackTimeBetween, if not, unlock the movement.
-        if (m_attackDurationTimer >= m_attackDuration)
-        {
-            m_attacking = false;        
-            if (m_attackTimeBetweenTimer > m_attackTimeBetween)
-            {
-                m_movementLocked = false;
-            }
-            m_attackTimeBetweenTimer += Time.deltaTime;
-        }       
-        m_attackCoolDownTimer -= Time.deltaTime;
-    }
-
-    void Attack()
-    {
-        Collider2D[] attackCandidates = new Collider2D[m_maxEnemiesToAttack];
-        ContactFilter2D filter = new ContactFilter2D();
-        filter.useTriggers = true;
-        int collidersCount = Physics2D.OverlapCollider(m_attackRegion, filter, attackCandidates);
-
-        for(int i = 0; i < collidersCount; i++)
-        {
-            if (m_damagedColliders.Contains(attackCandidates[i])) continue;
-            EnemyBehavior enemyBehavior = attackCandidates[i].GetComponent<EnemyBehavior>();
-            if(enemyBehavior != null)
-            {
-                enemyBehavior.Damaged(5, this.gameObject);
-                m_damagedColliders.Add(attackCandidates[i]);
-                Debug.Log("Attack enemy: " + enemyBehavior.gameObject.name);
-            }
-        }
-    }
-
     // Handle Wall Slide and Jump.
     void WallSlide()
     {
@@ -412,6 +327,7 @@ public class PrototypeHeroDemo : MonoBehaviour {
         m_groundSensor.Disable(0.2f);
         m_canDoubleJump = false;
     }
+
     public void Damaged(int damageValue, GameObject attacker)
     {
         // Damage calculation
