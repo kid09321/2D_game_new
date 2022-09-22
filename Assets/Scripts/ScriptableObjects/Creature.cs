@@ -10,6 +10,7 @@ public class Creature : ScriptableObject
     [SerializeField] float    m_maxHealth;
     [SerializeField] float    m_maxSpeed;
     [SerializeField] int      m_defaultFacingDirection;
+    [SerializeField] GameObject m_attackRegion;
 
     [SerializeField] RuntimeAnimatorController m_animatorController;    
     public Sprite Sprite
@@ -49,6 +50,14 @@ public class Creature : ScriptableObject
         get
         {
             return m_defaultFacingDirection;
+        }
+    }
+
+    public GameObject AttackRegion
+    {
+        get
+        {
+            return m_attackRegion;
         }
     }
 

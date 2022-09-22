@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class PrototypeHeroDemo : MonoBehaviour {
+public class CharacterMovement : MonoBehaviour {
 
     [Header("Variables")]
     [SerializeField] float      m_maxSpeed = 4.5f;
@@ -15,8 +15,6 @@ public class PrototypeHeroDemo : MonoBehaviour {
     [SerializeField] GameObject m_RunStopDust;
     [SerializeField] GameObject m_JumpDust;
     [SerializeField] GameObject m_LandingDust;
-    [Header("Test for changing appearance")]
-    [SerializeField] Creature   m_creatureData;
     [Header("WallSlide")]
     [SerializeField] Transform  m_wallCheck;
     [SerializeField] float      m_radius = 10f;
@@ -29,6 +27,8 @@ public class PrototypeHeroDemo : MonoBehaviour {
     [SerializeField] int      m_maxHealth = 1000;
     [Header("UI")]
     [SerializeField] HealthBar  m_healthBar;
+
+    [SerializeField] Transform m_portalTransform;
 
     private Animator            m_animator;
     private Rigidbody2D         m_body2d;
@@ -46,10 +46,6 @@ public class PrototypeHeroDemo : MonoBehaviour {
     private float               m_dashDurationTimer = 0.0f;
     private int                 m_defaultFacingDirection = 1;
 
-    // Used for change appearance
-    private bool                m_changingAppearance = false;
-    private SpriteRenderer      m_spriteRenderer;
-
     // Used for wall slide
     private bool                m_canWallSlide = true;
     private bool                m_wallSlide = false;
@@ -61,6 +57,8 @@ public class PrototypeHeroDemo : MonoBehaviour {
     private int               m_currentHealth;
     private bool              m_canDoubleJump = false;
 
+    private bool              m_teleporting = false;
+    private Portal            m_portal;
     void Start ()
     {
         m_animator = GetComponent<Animator>();
@@ -68,8 +66,6 @@ public class PrototypeHeroDemo : MonoBehaviour {
         m_audioSource = GetComponent<AudioSource>();
         m_audioManager = AudioManager_PrototypeHero.instance;
         m_groundSensor = transform.Find("GroundSensor").GetComponent<Sensor_Prototype>();
-
-        m_spriteRenderer = GetComponent<SpriteRenderer>();
 
         m_currentHealth = m_maxHealth;
 
@@ -143,17 +139,31 @@ public class PrototypeHeroDemo : MonoBehaviour {
         WallSlide();
         WallJump();
 
-        // Handle appearance changing
-        if (Input.GetKeyDown(KeyCode.C) && !m_changingAppearance)
-        {
-            ChangeAppearance(m_creatureData);
-        }
+        //Teleport
+        Teleport(m_portal);
 
+    }
+
+    // Get functions
+    public bool Grounded()
+    {
+        return m_grounded;
     }
     // Set functions
     public void SetMovementLock(bool lockMovement)
     {
         m_movementLocked = lockMovement;
+    }
+    public void SetGrounded(bool grounded)
+    {
+        m_grounded = grounded;
+    }
+    public void SetDefaultFaceDirection(int facing)
+    {
+        if (facing == 1 || facing == -1)
+        {
+            m_defaultFacingDirection = facing;
+        }
     }
     // Handlers
     
@@ -213,7 +223,11 @@ public class PrototypeHeroDemo : MonoBehaviour {
         }
     }
 
+    //
     // Movements
+    //
+
+    // Dash
     void Dash()
     {
         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -259,7 +273,7 @@ public class PrototypeHeroDemo : MonoBehaviour {
         }
     }
 
-    // Handle Wall Slide and Jump.
+    // Wall Slide and Jump.
     void WallSlide()
     {
         if (m_canWallSlide)
@@ -340,40 +354,49 @@ public class PrototypeHeroDemo : MonoBehaviour {
         Debug.Log("Player: " + this.gameObject.name + "Current Health: " + m_currentHealth);
     }
 
-    // Change Appearance
-    void ChangeAppearance(Creature creatureData)
+    void Teleport(Portal portal)
     {
-        Debug.Log("Change Appearance");
-        m_changingAppearance = true;
-        StartCoroutine(SpriteFadeOut());
-        m_changingAppearance = false;
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            Debug.Log("Fading: " + GameManager.Instance.Fading);
+            Debug.Log("Teleporting: " + m_teleporting);
+            Debug.Log("Portal: " + portal);
+            if (!m_teleporting && portal != null && !GameManager.Instance.Fading)
+            {
+                m_teleporting = true;
+                GameManager.Instance.FadeOut();
+            }
+            
+        }
+
+        if (m_teleporting && !GameManager.Instance.Fading)
+        {
+            if (portal != null)
+            {
+                transform.position = new Vector3(portal.transform.position.x, portal.transform.position.y, transform.position.z);
+                GameManager.Instance.PlayerCamera.transform.position = new Vector3(portal.transform.position.x, portal.transform.position.y, GameManager.Instance.PlayerCamera.transform.position.z);
+
+            }
+            GameManager.Instance.FadeIn();
+            m_teleporting = false;
+        }
     }
 
-    IEnumerator SpriteFadeOut()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        float secPerLoop = 1.5f / 400f;
-        Color tmpColor = m_spriteRenderer.color;
-        Debug.Log("Sprite FadeOut");
-        for (int i = 255; i >= 0; i--)
+        Portal portal = collision.gameObject.GetComponent<Portal>();
+        Debug.Log(portal);
+        if (portal != null)
         {
-            tmpColor.a = i / 255f;
-            m_spriteRenderer.color = tmpColor;
-            yield return new WaitForSeconds(secPerLoop);
-        }
-        m_spriteRenderer.sprite = m_creatureData.Sprite;
-        m_animator.runtimeAnimatorController = m_creatureData.AnimatorController;
-        m_defaultFacingDirection = m_creatureData.DefaultFacingDirection;
-        // Set m_grounded to false to re-detect grounded for animator,
-        // or the grounded for animator will be false at the beginning untill
-        // jump or other action that off the ground.
-        m_grounded = false;
-        for (int i = 0; i <= 255; i++)
-        {
-            tmpColor.a = i / 255f;
-            m_spriteRenderer.color = tmpColor;
-            yield return new WaitForSeconds(secPerLoop);
+            m_portal = collision.gameObject.GetComponent<Portal>().Destination;
         }
     }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        m_portal = null;
+    }
+
 
     // Animation Events
     // These functions are called inside the animation files

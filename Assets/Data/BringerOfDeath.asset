@@ -16,4 +16,5 @@ MonoBehaviour:
   m_maxHealth: 20
   m_maxSpeed: 6
   m_defaultFacingDirection: -1
-  m_animatorController: {fileID: 9100000, guid: ccee253ff083e9e45ac8d4d553de6318, type: 2}
+  m_attackRegion: {fileID: 8920465952045183989, guid: c1558c5d76b2ee449b581c86b2b6c4b1, type: 3}
+  m_animatorController: {fileID: 9100000, guid: f3ffafda732b74e42ae14566bb5103c8, type: 2}

@@ -193,7 +193,7 @@ public class EnemyBehavior : MonoBehaviour
 
         Vector2 position = new Vector2(transform.position.x, transform.position.y);
         Vector2 playerPosition = new Vector2(m_playerTransform.position.x, m_playerTransform.position.y);
-        if (Vector2.Distance(position, playerPosition) < 3f)
+        if (Vector2.Distance(position, playerPosition) < 2.5f)
         {
             SetState(EnemyStates.Attack);
         }
@@ -275,7 +275,7 @@ public class EnemyBehavior : MonoBehaviour
         for (int i = 0; i < collidersCount; i++)
         {
             if (m_damagedColliders.Contains(attackCandidates[i])) continue;
-            PrototypeHeroDemo playerbehavior = attackCandidates[i].GetComponent<PrototypeHeroDemo>();
+            CharacterMovement playerbehavior = attackCandidates[i].GetComponent<CharacterMovement>();
             if (playerbehavior != null)
             {
                 playerbehavior.Damaged(5, this.gameObject);

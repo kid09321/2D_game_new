@@ -27,7 +27,7 @@ public class Saw : MonoBehaviour
         if(collision.gameObject.tag == "Player" && !damagedColliders.Contains(collision))
         {
             damagedColliders.Add(collision);
-            PrototypeHeroDemo player = collision.gameObject.GetComponent<PrototypeHeroDemo>();
+            CharacterMovement player = collision.gameObject.GetComponent<CharacterMovement>();
             player.Damaged(5, this.gameObject);
             StartCoroutine(RemoveDamagedCollider(collision));
         }

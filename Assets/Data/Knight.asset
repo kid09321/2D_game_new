@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c245fae9e41ef488d9c0ee35f527e3, type: 3}
+  m_Name: Knight
+  m_EditorClassIdentifier: 
+  m_sprite: {fileID: 1550320543, guid: c166cf2f60dd74244bbe2b55d457124a, type: 3}
+  m_maxHealth: 200
+  m_maxSpeed: 4.5
+  m_defaultFacingDirection: 1
+  m_attackRegion: {fileID: 4571546723115664247, guid: f95a636bf8c2104408b90e89b6e95482, type: 3}
+  m_animatorController: {fileID: 9100000, guid: d12729da9b2bd1248b5774ac17efb2c1, type: 2}
