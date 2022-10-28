@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour
     static public GameManager Instance;
     [SerializeField] Camera m_playerCamera;
 
+    [SerializeField] StoryEventManager m_storyEventManager;
+    [SerializeField] StoryDialogue m_storyDialogue;
+
     public enum GameState { Normal, Story}
     public GameState CurrentState { get; private set; }
 
@@ -50,6 +53,8 @@ public class GameManager : MonoBehaviour
     {
         SetCurrentState(GameState.Normal);
         FadeIn();
+        FirstStory storyEvent = new FirstStory("firstStory", m_storyDialogue);
+        m_storyEventManager.SetStoryEvent(storyEvent);
     }
 
     // Update is called once per frame
@@ -66,6 +71,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateStateSettings(GameState gameState)
     {
+        Debug.Log("Update State" + gameState);
         switch (gameState)
         {
             case GameState.Normal:
@@ -129,7 +135,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(secPerLoop);
         }
         m_isFading = false;
-        UnlockCharacterMovement();
+        //UnlockCharacterMovement();
     }
 
     void LockCharacterMovement()

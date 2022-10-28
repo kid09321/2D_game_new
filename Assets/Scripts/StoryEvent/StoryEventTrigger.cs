@@ -27,7 +27,8 @@ public class StoryEventTrigger : MonoBehaviour
         if (collision.gameObject.tag == ("Player"))
         {
             Debug.Log("Player Enter story event!");
-            FirstBossFight storyEvent = new FirstBossFight("firstBossFight", m_storyDialogue);
+            //FirstBossFight storyEvent = new FirstBossFight("firstBossFight", m_storyDialogue);
+            FirstStory storyEvent = new FirstStory("firstStory", m_storyDialogue);
             m_storyEventManager.SetStoryEvent(storyEvent);
         }
     }

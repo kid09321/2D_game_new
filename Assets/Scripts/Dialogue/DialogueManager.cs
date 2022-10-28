@@ -8,6 +8,7 @@ public class DialogueManager : MonoBehaviour
 {
     static public DialogueManager Instance;
     public StoryDialogue CurrentDialogue { get; private set; }
+    public StoryDialogue CurrentStoryContext { get; private set; }
     public enum DialogueState { Idle, NormalDisplaying, FastDisplaying, Finished, Over}
 
     //
@@ -15,15 +16,27 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] GameObject      m_dialogueUI;
     [SerializeField] Image           m_dialogueImage;
     [SerializeField] TextMeshProUGUI m_dialogueSpeakerName;
+
+    [SerializeField] TextMeshProUGUI m_StoryTMP;
     //
     private int             m_lineCounter = 0;
     private bool            m_lineFinished = false;
     private DialogueState   m_currentState = DialogueState.Idle;
+    private DialogueState   m_currentStoryContextState = DialogueState.Idle;
+    private int             m_storyLineCounter = 0;
 
     public DialogueState CurrentState
     {
         get{
             return m_currentState;
+        }
+    }
+
+    public DialogueState CurrentStoryContextState
+    {
+        get
+        {
+            return m_currentStoryContextState;
         }
     }
     private void Awake()
@@ -117,5 +130,38 @@ public class DialogueManager : MonoBehaviour
         }
         m_lineFinished = true;
         m_currentState = DialogueState.Finished;
+    }
+
+    public void StartStoryContext()
+    {
+        List<DialogueContent> dialogues = CurrentStoryContext.GetStoryDialogue();
+        m_currentStoryContextState = DialogueState.NormalDisplaying;
+        if (m_storyLineCounter < dialogues.Count)
+        {
+            StartCoroutine("DisplayStoryContext", dialogues[m_storyLineCounter]);
+        }
+    }
+    
+    public void SetCurrentStoryContext(StoryDialogue storyDialogue)
+    {
+        m_storyLineCounter = 0;
+        m_currentStoryContextState = DialogueState.Idle;
+        CurrentStoryContext = storyDialogue;
+    }
+
+    IEnumerator DisplayStoryContext(DialogueContent dialogueContent)
+    {
+        string content = dialogueContent.GetContent();
+        string displayContent = "";
+        for (int i = 0; i < content.Length; i++)
+        {
+            displayContent += content[i];
+            m_StoryTMP.text = displayContent.Replace("\\n", "\n");
+            yield return new WaitForSeconds(0.1f);
+
+        }
+        m_StoryTMP.text = "";
+        m_currentStoryContextState = DialogueState.Finished;
+        Debug.Log("Finishedd~~~~~~~~~~~~");
     }
 }

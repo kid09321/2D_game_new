@@ -6,7 +6,9 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "DialogueContent", menuName = "ScriptableObjects/DialogueContent")]
 public class DialogueContent : ScriptableObject
 {
+    [TextArea]
     [SerializeField] string m_content = "Default dialogue content.";
+
     [SerializeField] string m_speakerName = "Default name";
     [SerializeField] Sprite m_speakerImage;
     

@@ -30,7 +30,10 @@ public class PlayerCamera : MonoBehaviour
 
     private void FixedUpdate()
     {
-        FollowCharacter();
+        if (GameManager.Instance.m_canMoveCamera)
+        {
+            FollowCharacter();
+        }
     }
 
     void FollowCharacter()

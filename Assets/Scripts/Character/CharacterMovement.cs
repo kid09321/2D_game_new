@@ -74,15 +74,6 @@ public class CharacterMovement : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        if (!GameManager.Instance.m_canControlPlayer)
-        {
-            //Stop character;
-            m_body2d.velocity = new Vector2(0, m_body2d.velocity.y);
-            m_animator.SetBool("Grounded", m_grounded);
-            m_animator.SetFloat("AirSpeedY", m_body2d.velocity.y);
-            m_animator.SetInteger("AnimState", 0);
-            return;
-        }
         // Decrease timer that disables input movement. Used when attacking
         m_disableMovementTimer -= Time.deltaTime;
 
@@ -100,40 +91,24 @@ public class CharacterMovement : MonoBehaviour {
             m_animator.SetBool("Grounded", m_grounded);
         }
 
+        if (!GameManager.Instance.m_canControlPlayer)
+        {
+            //Stop character;
+            //m_body2d.velocity = new Vector2(0, m_body2d.velocity.y);
+            //m_animator.SetBool("Grounded", m_grounded);
+            //m_animator.SetFloat("AirSpeedY", m_body2d.velocity.y);
+            //m_animator.SetInteger("AnimState", 0);
+            return;
+        }
         // -- Handle input and movement --
-        MovementHandler();
+        MovementHandler(0f, 0f);
 
         // Set AirSpeed in animator
         m_animator.SetFloat("AirSpeedY", m_body2d.velocity.y);
 
         // Set Animation layer for hiding sword
         int boolInt = m_hideSword ? 1 : 0;
-        m_animator.SetLayerWeight(1, boolInt);      
-
-        if (!m_movementLocked)
-        {                        
-            // -- Handle Animations --
-            //Jump
-            if (Input.GetButtonDown("Jump") && m_grounded && m_disableMovementTimer < 0.0f)
-            {
-                Jump();
-            }
-            else if(Input.GetButtonDown("Jump") && !m_grounded && m_canDoubleJump)
-            {
-                DoubleJump();
-            }
-
-            //Run
-            else if (m_moving)
-                m_animator.SetInteger("AnimState", 1);
-
-            //Idle
-            else
-                m_animator.SetInteger("AnimState", 0);
-
-            if (m_dashing)
-                m_animator.SetInteger("AnimState", 2);
-        }
+        m_animator.SetLayerWeight(1, boolInt);          
 
         // Handle Wall Slide
         WallSlide();
@@ -168,23 +143,29 @@ public class CharacterMovement : MonoBehaviour {
     // Handlers
     
     // Movement input handler
-    void MovementHandler()
+    public void MovementHandler(float inputX, float inputRaw)
     {
-        float inputX = 0.0f;
-        float inputRaw = 0.0f;
+        //inputX = 0.0f;
+        //inputRaw = 0.0f;   
         if (!m_movementLocked && m_disableMovementTimer < 0.0f)
         {
-            inputX = Input.GetAxis("Horizontal");
+            if(Input.GetAxis("Horizontal") != 0.0f)
+            {
+                inputX = Input.GetAxis("Horizontal");
+            }          
         }
         // GetAxisRaw returns either -1, 0 or 1
-        inputRaw = Input.GetAxisRaw("Horizontal");
+        if (Input.GetAxisRaw("Horizontal")!= 0.0f)
+        {
+            inputRaw = Input.GetAxisRaw("Horizontal");
+        }
         // Check if current move input is larger than 0 and the move direction is equal to the characters facing direction
         if (Mathf.Abs(inputRaw) > Mathf.Epsilon && Mathf.Sign(inputRaw) == m_facingDirection)
             m_moving = true;
 
         else
             m_moving = false;
-
+    
         // Swap direction of sprite depending on move direction
         if (inputRaw > 0)
         {
@@ -206,7 +187,10 @@ public class CharacterMovement : MonoBehaviour {
         m_body2d.velocity = new Vector2(inputX * m_maxSpeed * SlowDownSpeed, m_body2d.velocity.y);
         // Dash
         Dash();
+        // Handle Animation
+        MovementAnimation();
     }
+
     // Function used to spawn a dust effect
     // All dust effects spawns on the floor
     // dustXoffset controls how far from the player the effects spawns.
@@ -451,5 +435,37 @@ public class CharacterMovement : MonoBehaviour {
     void AE_Dash()
     {
         m_audioManager.PlaySound("Dash");
+    }
+
+    void MovementAnimation()
+    {
+        if (!m_movementLocked)
+        {
+            // -- Handle Animations --
+            //Jump
+            if (Input.GetButtonDown("Jump") && m_grounded && m_disableMovementTimer < 0.0f)
+            {
+                Jump();
+            }
+            else if (Input.GetButtonDown("Jump") && !m_grounded && m_canDoubleJump)
+            {
+                DoubleJump();
+            }
+
+            //Run
+            else if (m_moving)
+            {
+                Debug.Log("moving");
+                m_animator.SetInteger("AnimState", 1);
+
+            }
+            //Idle
+            else
+            {
+                m_animator.SetInteger("AnimState", 0);
+            }
+            if (m_dashing)
+                m_animator.SetInteger("AnimState", 2);
+        }
     }
 }

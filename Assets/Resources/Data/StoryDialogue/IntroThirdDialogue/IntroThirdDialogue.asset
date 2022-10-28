@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ad898c4ff6bf694ab63c5ade79dfd3a, type: 3}
+  m_Name: IntroThirdDialogue
+  m_EditorClassIdentifier: 
+  m_storyDialuges:
+  - {fileID: 11400000, guid: c33802b266efc3e4e933529f3b17dc29, type: 2}
+  - {fileID: 11400000, guid: eb7ebb9df01a63745943f0e75ef93440, type: 2}
